@@ -27,53 +27,54 @@
 <body>
 
 <h2>Zoofenster Zeiterfassung</h2>
+
+<p>Erfasse Buchung...</p>
+
 <p id="status">Bitte warten...</p>
 
 <script>
 
 const ENDPOINT = "https://default24139d14c62c4c478bddce71ea1d50.cf.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7aa3eb7925224dad95647d9a7470c868/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fo3vOPqeJ45P5jJjNQ4TLGpvUZPRj7GCjrW0rUbjc0Y";
 
-// 👉 Gerät-ID
+// 👉 Anonyme ID pro Gerät erzeugen
 if (!localStorage.scanId) {
   localStorage.scanId = crypto.randomUUID();
 }
 
-// 👉 letzte Aktion lesen
-let lastAction = localStorage.lastAction;
+// 👉 URL Parameter lesen
+const params = new URLSearchParams(window.location.search);
+const type = params.get("type");
 
-// 👉 Logik bestimmen
-let type;
+// 👉 Nur wenn IN oder OUT vorhanden → buchen
+if (type === "IN" || type === "OUT") {
 
-if (!lastAction || lastAction === "OUT") {
-  type = "IN";
+  fetch(ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      scanId: localStorage.scanId,
+      type: type,
+      project: "Zoofenster"
+    })
+  });
+
+  // 👉 Anzeige für User
+  document.getElementById("status").innerText =
+    type === "IN"
+    ? "✅ Erfolgreich eingestempelt"
+    : "✅ Erfolgreich ausgestempelt";
+
 } else {
-  type = "OUT";
+
+  // 👉 Falls jemand ohne QR-Code kommt
+  document.getElementById("status").innerText =
+    "⚠️ Bitte QR-Code verwenden";
+
 }
-
-// 👉 an Flow senden
-fetch(ENDPOINT, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    scanId: localStorage.scanId,
-    type: type,
-    project: "Zoofenster"
-  })
-});
-
-// 👉 neue Aktion speichern
-localStorage.lastAction = type;
-
-// 👉 Anzeige
-document.getElementById("status").innerText =
-  type === "IN"
-  ? "✅ Erfolgreich eingestempelt"
-  : "🚪 Erfolgreich ausgestempelt";
 
 </script>
 
 </body>
 </html>
-``
