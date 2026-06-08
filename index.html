@@ -17,7 +17,7 @@
     }
 
     #status {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: bold;
       margin-top: 40px;
     }
@@ -31,41 +31,54 @@
 
 <script>
 
+// 👉 DEIN FLOW ENDPOINT
 const ENDPOINT = "https://default24139d14c62c4c478bddce71ea1d50.cf.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7aa3eb7925224dad95647d9a7470c868/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fo3vOPqeJ45P5jJjNQ4TLGpvUZPRj7GCjrW0rUbjc0Y";
 
-// Geräte-ID (bleibt erhalten)
+// 👉 Geräte-ID (einmalig)
 if (!localStorage.scanId) {
   localStorage.scanId = crypto.randomUUID();
 }
 
-// URL Parameter lesen
+// 👉 URL Parameter holen
 const params = new URLSearchParams(window.location.search);
+
 const type = params.get("type");
+const token = params.get("token");
 
-// nur IN / OUT erlauben
-if (type === "IN" || type === "OUT") {
+// 👉 Status-Element
+const status = document.getElementById("status");
 
+// 👉 prüfen was vorhanden ist
+if ((type === "IN" || type === "OUT") && token) {
+
+  status.innerText = "⏳ Buchung läuft...";
+
+  // 👉 Request senden
   fetch(ENDPOINT, {
     method: "POST",
+    mode: "no-cors",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
       scanId: localStorage.scanId,
       type: type,
-      project: "Zoofenster"
+      project: "Zoofenster",
+      token: token   // 🔥 EXTREM WICHTIG
     })
   });
 
-  document.getElementById("status").innerText =
-    type === "IN"
-      ? "✅ Erfolgreich eingestempelt"
-      : "🚪 Erfolgreich ausgestempelt";
+  // 👉 Feedback anzeigen
+  setTimeout(() => {
+    status.innerText =
+      type === "IN"
+        ? "✅ Erfolgreich eingestempelt"
+        : "🚪 Erfolgreich ausgestempelt";
+  }, 1000);
 
 } else {
 
-  document.getElementById("status").innerText =
-    "⚠️ Bitte QR-Code verwenden";
+  status.innerText = "⚠️ Ungültiger QR-Code";
 
 }
 
@@ -73,4 +86,3 @@ if (type === "IN" || type === "OUT") {
 
 </body>
 </html>
-``
