@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Zoofenster QR Anzeige</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #f5f5f5;
+      padding: 40px;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+    }
+
+    .section {
+      margin-bottom: 60px;
+    }
+
+    canvas {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Zoofenster Zeiterfassung</h1>
+
+<div class="section">
+  <h2>✅ Arbeitsbeginn</h2>
+  <canvas id="qrIn"></canvas>
+</div>
+
+<div class="section">
+  <h2>🚪 Arbeitsende</h2>
+  <canvas id="qrOut"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+<script>
+
+// 👉 Basis URL deiner Seite
+const BASE = "https://kpp2006.github.io/zoofenster-zeiterfassung/";
+
+// 👉 Zeitfenster bestimmen (3 Schichten)
+function getShift() {
+  const hour = new Date().getHours();
+
+  if (hour < 10) return "1";     // morgens
+  if (hour < 15) return "2";     // mittags
+  return "3";                    // abends
+}
+
+// 👉 QR generieren
+function generateQR() {
+
+  const shift = getShift();
+
+  const linkIn = BASE + "?type=IN&shift=" + shift;
+  const linkOut = BASE + "?type=OUT&shift=" + shift;
+
+  QRCode.toCanvas(document.getElementById("qrIn"), linkIn);
+  QRCode.toCanvas(document.getElementById("qrOut"), linkOut);
+
+}
+
+// 👉 initial
+generateQR();
+
+// 👉 automatisch alle 5 Minuten aktualisieren
+setInterval(generateQR, 300000);
+
+</script>
+
+</body>
+</html>
