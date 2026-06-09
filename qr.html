@@ -25,13 +25,12 @@
     }
   </style>
 
-  <!-- QR Code Library -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 </head>
 
 <body>
 
-<h1>Zoofenster Anwesenheiten</h1>
+<h1>Zoofenster Zeiterfassung</h1>
 
 <div class="section">
   <h2>✅ Arbeitsbeginn</h2>
@@ -45,22 +44,20 @@
 
 <script>
 
-// 👉 Basis URL deiner Buchungsseite
+// 👉 Basis URL (deine Buchungsseite)
 const BASE = "https://kpp2006.github.io/zoofenster-zeiterfassung/";
 
-// 👉 TOKEN generieren (Tag + Stunde)
+// 👉 Token erzeugen (Datum + Stunde)
 function generateToken() {
   const now = new Date();
+  const day = now.toISOString().slice(0,10);
+  const hour = now.getHours();
 
-  const day = now.toISOString().slice(0,10);  // yyyy-MM-dd
-  const hour = now.getHours();                // Stunde
-
-  return btoa(day + "-" + hour); // Base64 Encoding
+  return btoa(day + "-" + hour);
 }
 
-// 👉 QR generieren
+// 👉 QR erzeugen
 function generateQR() {
-
   const token = generateToken();
 
   const linkIn = BASE + "?type=IN&token=" + token;
@@ -68,13 +65,12 @@ function generateQR() {
 
   QRCode.toCanvas(document.getElementById("qrIn"), linkIn);
   QRCode.toCanvas(document.getElementById("qrOut"), linkOut);
-
 }
 
-// 👉 initial anzeigen
+// initial anzeigen
 generateQR();
 
-// 👉 jede Minute prüfen (falls Stunde gewechselt hat)
+// alle 60 Sekunden aktualisieren (Stunde wechselt automatisch)
 setInterval(generateQR, 60000);
 
 </script>
