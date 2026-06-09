@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Zoofenster Anwesenheit</title>
+  <title>Zoofenster Zeiterfassung</title>
 
   <style>
     body {
@@ -34,26 +34,26 @@
 // 👉 DEIN FLOW ENDPOINT
 const ENDPOINT = "https://default24139d14c62c4c478bddce71ea1d50.cf.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7aa3eb7925224dad95647d9a7470c868/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fo3vOPqeJ45P5jJjNQ4TLGpvUZPRj7GCjrW0rUbjc0Y";
 
-// 👉 Geräte-ID (einmalig)
+// 👉 Geräte-ID
 if (!localStorage.scanId) {
   localStorage.scanId = crypto.randomUUID();
 }
 
-// 👉 URL Parameter holen
+// 👉 Parameter aus URL
 const params = new URLSearchParams(window.location.search);
 
 const type = params.get("type");
 const token = params.get("token");
 
-// 👉 Status-Element
+// 👉 Statusanzeige
 const status = document.getElementById("status");
 
-// 👉 prüfen was vorhanden ist
+// 👉 Validierung
 if ((type === "IN" || type === "OUT") && token) {
 
   status.innerText = "⏳ Buchung läuft...";
 
-  // 👉 Request senden
+  // 👉 Request an Flow
   fetch(ENDPOINT, {
     method: "POST",
     mode: "no-cors",
@@ -64,11 +64,11 @@ if ((type === "IN" || type === "OUT") && token) {
       scanId: localStorage.scanId,
       type: type,
       project: "Zoofenster",
-      token: token   // 🔥 EXTREM WICHTIG
+      token: token
     })
   });
 
-  // 👉 Feedback anzeigen
+  // 👉 Anzeige
   setTimeout(() => {
     status.innerText =
       type === "IN"
