@@ -54,19 +54,26 @@ if ((type === "IN" || type === "OUT") && token) {
   status.innerText = "⏳ Buchung läuft...";
 
   // 👉 Request an Flow
-  fetch(ENDPOINT, {
-    method: "POST",
-    mode: "no-cors",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      scanId: localStorage.scanId,
-      type: type,
-      project: "Zoofenster",
-      token: token
-    })
-  });
+ 
+fetch(ENDPOINT, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    scanId: localStorage.scanId,
+    type: type,
+    project: "Zoofenster",
+    token: token
+  })
+})
+.then(() => {
+  console.log("An Flow gesendet");
+})
+.catch(err => {
+  console.error("Fehler:", err);
+});
+
 
   // 👉 Anzeige
   setTimeout(() => {
