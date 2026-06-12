@@ -2,36 +2,69 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Zoofenster Zeiterfassung</title>
+  <title>Zoofenster Zugang</title>
 
   <style>
     body {
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 80px;
-      background: #f5f5f5;
+      margin-top: 40px;
+      background: #f5f7fa;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      width: 90%;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .logo {
+      width: 220px;
+      margin-bottom: 20px;
     }
 
     h2 {
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+
+    p.subtitle {
+      color: #666;
+      margin-bottom: 30px;
     }
 
     #status {
       font-size: 26px;
       font-weight: bold;
-      margin-top: 40px;
+      margin-top: 30px;
     }
+
   </style>
 </head>
 
 <body>
 
-<h2>Zoofenster Zeiterfassung</h2>
-<p id="status">Bitte warten...</p>
+<div class="container">
+
+  <!-- ✅ Logo -->
+  <img src="Engie-Logo_neu.png" class="logo">
+
+  <!-- ✅ Titel -->
+  <h2>Zoofenster Zugang</h2>
+  <p class="subtitle">Bitte Scanvorgang abwarten</p>
+
+  <!-- ✅ Status -->
+  <p id="status">⏳ Verbindung wird hergestellt...</p>
+
+</div>
 
 <script>
 
-// 👉 DEIN FLOW ENDPOINT
+// 👉 FLOW ENDPOINT
 const ENDPOINT = "https://default24139d14c62c4c478bddce71ea1d50.cf.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7aa3eb7925224dad95647d9a7470c868/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fo3vOPqeJ45P5jJjNQ4TLGpvUZPRj7GCjrW0rUbjc0Y";
 
 // 👉 Geräte-ID
@@ -39,54 +72,48 @@ if (!localStorage.scanId) {
   localStorage.scanId = crypto.randomUUID();
 }
 
-// 👉 Parameter aus URL
+// 👉 Parameter lesen
 const params = new URLSearchParams(window.location.search);
 
 const type = params.get("type");
 const token = params.get("token");
 
-// 👉 Statusanzeige
+// 👉 Anzeige
 const status = document.getElementById("status");
 
 // 👉 Validierung
 if ((type === "IN" || type === "OUT") && token) {
 
-  status.innerText = "⏳ Buchung läuft...";
+  status.innerText = "⏳ Vorgang läuft...";
 
-  // 👉 Request an Flow
- 
-fetch(ENDPOINT, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    scanId: localStorage.scanId,
-    type: type,
-    project: "Zoofenster",
-    token: token
+  fetch(ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      scanId: localStorage.scanId,
+      type: type,
+      project: "Zoofenster",
+      token: token
+    })
   })
-})
-.then(() => {
-  console.log("An Flow gesendet");
-})
-.catch(err => {
-  console.error("Fehler:", err);
-});
+  .then(() => {
 
+    if (type === "IN") {
+      status.innerText = "✅ Erfolgreich eingecheckt";
+    } else {
+      status.innerText = "🚪 Erfolgreich ausgecheckt";
+    }
 
-  // 👉 Anzeige
-  setTimeout(() => {
-    status.innerText =
-      type === "IN"
-        ? "✅ Erfolgreich eingestempelt"
-        : "🚪 Erfolgreich ausgestempelt";
-  }, 1000);
+  })
+  .catch(err => {
+    console.error(err);
+    status.innerText = "❌ Fehler – bitte erneut scannen";
+  });
 
 } else {
-
   status.innerText = "⚠️ Ungültiger QR-Code";
-
 }
 
 </script>
