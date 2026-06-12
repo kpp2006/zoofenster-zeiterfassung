@@ -107,13 +107,33 @@ if ((type === "IN" || type === "OUT") && token) {
       token: token
     })
   })
-  .then(() => {
 
-    if (type === "IN") {
-      status.innerText = "✅ Erfolgreich eingecheckt";
-    } else {
-      status.innerText = "🚪 Erfolgreich ausgecheckt";
-    }
+.then(response => response.json())
+.then(data => {
+
+  // 🔴 Doppel-IN
+  if (data.status === "BLOCK_IN") {
+    status.innerText = "⚠️ Bereits eingecheckt";
+    status.style.background = "#ffe0e0";
+    return;
+  }
+
+  // 🔴 Doppel-OUT
+  if (data.status === "BLOCK_OUT") {
+    status.innerText = "⚠️ Kein gültiger vorheriger Check-In";
+    status.style.background = "#ffe0e0";
+    return;
+  }
+
+  // ✅ Erfolgreich
+  if (type === "IN") {
+    status.innerText = "✅ Erfolgreich eingecheckt";
+    status.style.background = "#e0ffe5";
+  } else {
+    status.innerText = "🚪 Erfolgreich ausgecheckt";
+    status.style.background = "#e0ffe5";
+  }
+
 
   })
   .catch(err => {
