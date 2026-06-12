@@ -35,11 +35,17 @@
       margin-bottom: 40px;
     }
 
+    /* ✅ wichtig: nebeneinander */
+    .qr-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 60px;
+      flex-wrap: wrap;
+    }
+
     .qr-section {
-      display: inline-block;
-      width: 40%;
-      margin: 20px;
-      vertical-align: top;
+      text-align: center;
     }
 
     .qr-title {
@@ -48,9 +54,8 @@
     }
 
     canvas {
-      margin-top: 20px;
-      width: 280px !important;
-      height: 280px !important;
+      width: 300px !important;
+      height: 300px !important;
     }
 
     .refresh {
@@ -61,6 +66,7 @@
 
   </style>
 
+  <!-- ✅ QR Library -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 </head>
 
@@ -68,23 +74,77 @@
 
 <div class="container">
 
-  <!-- ✅ Logo -->
+  <!-- ✅ LOGO korrekt -->
   <img src="Engie-Logo_neu.png" class="logo">
 
   <h1>Zoofenster Zugang</h1>
   <p class="subtitle">Bitte passenden Code scannen</p>
 
-  <!-- ✅ EINCHECKEN -->
-  <div class="qr-section">
-    <div class="qr-title">✅ Einchecken</div>
-    <canvas id="qrIn"></canvas>
-  </div>
+  <!-- ✅ QR Codes nebeneinander -->
+  <div class="qr-wrapper">
 
-  <!-- ✅ AUSCHECKEN -->
-  <div class="qr-section">
-    <div class="qr-title">🚪 Auschecken</div>
-    <canvas id="qrOut"></canvas>
+    <div class="qr-section">
+      <div class="qr-title">✅ Einchecken</div>
+      <canvas id="qrIn"></canvas>
+    </div>
+
+    <div class="qr-section">
+      <div class="qr-title">🚪 Auschecken</div>
+      <canvas id="qrOut"></canvas>
+    </div>
+
   </div>
 
   <div class="refresh">
     Codes werden automatisch aktualisiert (Sicherheitsfunktion)
+  </div>
+
+</div>
+
+<script>
+
+// 👉 Basis URL deiner index.html
+const BASE = "https://kpp2006.github.io/zoofenster-zeiterfassung/";
+
+// 👉 Token generieren (Tag + Stunde)
+function generateToken() {
+  const now = new Date();
+  const day = now.toISOString().slice(0,10);
+  const hour = now.getHours();
+  return btoa(day + "-" + hour);
+}
+
+// 👉 QR Codes erstellen
+function generateQR() {
+
+  const token = generateToken();
+
+  const linkIn = BASE + "?type=IN&token=" + token;
+  const linkOut = BASE + "?type=OUT&token=" + token;
+
+  const qrInCanvas = document.getElementById("qrIn");
+  const qrOutCanvas = document.getElementById("qrOut");
+
+  if (!qrInCanvas || !qrOutCanvas) return;
+
+  QRCode.toCanvas(qrInCanvas, linkIn, {
+    width: 300,
+    margin: 2
+  });
+
+  QRCode.toCanvas(qrOutCanvas, linkOut, {
+    width: 300,
+    margin: 2
+  });
+}
+
+// ✅ WICHTIG: warten bis Seite geladen ist
+window.onload = function() {
+  generateQR();
+  setInterval(generateQR, 60000);
+};
+
+</script>
+
+</body>
+</html>
