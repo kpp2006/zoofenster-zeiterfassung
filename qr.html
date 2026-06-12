@@ -2,27 +2,63 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Zoofenster QR Anzeige</title>
+  <title>Zoofenster Zugangscodes</title>
 
   <style>
     body {
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       text-align: center;
-      background: #f5f5f5;
+      background: #f5f7fa;
+      padding: 30px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
       padding: 40px;
+      max-width: 900px;
+      margin: auto;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .logo {
+      width: 220px;
+      margin-bottom: 20px;
     }
 
     h1 {
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #666;
       margin-bottom: 40px;
     }
 
-    .section {
-      margin-bottom: 60px;
+    .qr-section {
+      display: inline-block;
+      width: 40%;
+      margin: 20px;
+      vertical-align: top;
+    }
+
+    .qr-title {
+      font-size: 22px;
+      margin-bottom: 20px;
     }
 
     canvas {
       margin-top: 20px;
+      width: 280px !important;
+      height: 280px !important;
     }
+
+    .refresh {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #888;
+    }
+
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
@@ -30,50 +66,25 @@
 
 <body>
 
-<h1>Zoofenster Zeiterfassung</h1>
+<div class="container">
 
-<div class="section">
-  <h2>✅ Arbeitsbeginn</h2>
-  <canvas id="qrIn"></canvas>
-</div>
+  <!-- ✅ Logo -->
+  <img src="Engie-Logo_neu.png" class="logo">
 
-<div class="section">
-  <h2>🚪 Arbeitsende</h2>
-  <canvas id="qrOut"></canvas>
-</div>
+  <h1>Zoofenster Zugang</h1>
+  <p class="subtitle">Bitte passenden Code scannen</p>
 
-<script>
+  <!-- ✅ EINCHECKEN -->
+  <div class="qr-section">
+    <div class="qr-title">✅ Einchecken</div>
+    <canvas id="qrIn"></canvas>
+  </div>
 
-// 👉 Basis URL (deine Buchungsseite)
-const BASE = "https://kpp2006.github.io/zoofenster-zeiterfassung/";
+  <!-- ✅ AUSCHECKEN -->
+  <div class="qr-section">
+    <div class="qr-title">🚪 Auschecken</div>
+    <canvas id="qrOut"></canvas>
+  </div>
 
-// 👉 Token erzeugen (Datum + Stunde)
-function generateToken() {
-  const now = new Date();
-  const day = now.toISOString().slice(0,10);
-  const hour = now.getHours();
-
-  return btoa(day + "-" + hour);
-}
-
-// 👉 QR erzeugen
-function generateQR() {
-  const token = generateToken();
-
-  const linkIn = BASE + "?type=IN&token=" + token;
-  const linkOut = BASE + "?type=OUT&token=" + token;
-
-  QRCode.toCanvas(document.getElementById("qrIn"), linkIn);
-  QRCode.toCanvas(document.getElementById("qrOut"), linkOut);
-}
-
-// initial anzeigen
-generateQR();
-
-// alle 60 Sekunden aktualisieren (Stunde wechselt automatisch)
-setInterval(generateQR, 60000);
-
-</script>
-
-</body>
-</html>
+  <div class="refresh">
+    Codes werden automatisch aktualisiert (Sicherheitsfunktion)
