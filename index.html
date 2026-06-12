@@ -2,45 +2,56 @@
 <html>
 <head>
   <meta charset="UTF-8">
+
+  <!-- ✅ WICHTIG für Mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Zoofenster Zugang</title>
 
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 40px;
       background: #f5f7fa;
+      margin: 0;
+      padding: 20px;
     }
 
     .container {
       background: white;
       border-radius: 12px;
-      padding: 40px;
-      width: 90%;
-      max-width: 500px;
+      padding: 25px;
+      width: 95%;
+      max-width: 420px;
       margin: auto;
       box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     }
 
     .logo {
-      width: 220px;
+      width: 180px;
+      max-width: 80%;
       margin-bottom: 20px;
     }
 
     h2 {
+      font-size: 22px;
       margin-bottom: 10px;
-      font-size: 24px;
     }
 
-    p.subtitle {
+    .subtitle {
+      font-size: 14px;
       color: #666;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     #status {
-      font-size: 26px;
+      font-size: 22px;
       font-weight: bold;
       margin-top: 30px;
+      padding: 15px;
+      border-radius: 10px;
+      background: #f0f4f8;
+      line-height: 1.4;
     }
 
   </style>
@@ -50,29 +61,27 @@
 
 <div class="container">
 
-  <!-- ✅ Logo -->
+  <!-- ✅ Logo korrekt -->
   <img src="Engie-Logo_neu.png" class="logo">
 
-  <!-- ✅ Titel -->
   <h2>Zoofenster Zugang</h2>
   <p class="subtitle">Bitte Scanvorgang abwarten</p>
 
-  <!-- ✅ Status -->
   <p id="status">⏳ Verbindung wird hergestellt...</p>
 
 </div>
 
 <script>
 
-// 👉 FLOW ENDPOINT
+// 👉 FLOW ENDPOINT (deiner)
 const ENDPOINT = "https://default24139d14c62c4c478bddce71ea1d50.cf.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7aa3eb7925224dad95647d9a7470c868/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fo3vOPqeJ45P5jJjNQ4TLGpvUZPRj7GCjrW0rUbjc0Y";
 
-// 👉 Geräte-ID
+// 👉 Geräte-ID speichern
 if (!localStorage.scanId) {
   localStorage.scanId = crypto.randomUUID();
 }
 
-// 👉 Parameter lesen
+// 👉 URL Parameter lesen
 const params = new URLSearchParams(window.location.search);
 
 const type = params.get("type");
@@ -113,7 +122,9 @@ if ((type === "IN" || type === "OUT") && token) {
   });
 
 } else {
+
   status.innerText = "⚠️ Ungültiger QR-Code";
+
 }
 
 </script>
